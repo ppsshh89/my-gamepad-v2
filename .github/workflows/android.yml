@@ -16,11 +16,19 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Setup Gradle
-      uses: gradle/gradle-build-action@v2
+    - name: Install Android SDK & Build Tools
+      uses: android-actions/setup-android@v2
 
-    - name: Build with Gradle
-      run: gradle wrapper && ./gradlew assembleDebug
+    - name: Download and Setup Gradle Manually
+      run: |
+        wget https://services.gradle.org/distributions/gradle-7.5-bin.zip
+        unzip gradle-7.5-bin.zip
+        export PATH=$PWD/gradle-7.5/bin:$PATH
+        
+        # 프로젝트 루트에 로컬 gradle 환경 강제 생성
+        gradle wrapper --gradle-version 7.5
+        chmod +x gradlew
+        ./gradlew assembleDebug --no-daemon
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v3
