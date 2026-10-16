@@ -16,11 +16,11 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
-
-    - name: Build APK with Gradle
-      run: ./gradlew assembleDebug
+    - name: Build with Standard Gradle
+      run: |
+        export org.gradle.jvmargs="-Xmx2g"
+        # gradlew 없이 시스템 전역 gradle 명령어로 직접 빌드 강제 실행
+        gradle assembleDebug --no-daemon
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v3
