@@ -16,11 +16,22 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Build with Standard Gradle
+    - name: Build Android App with Mobile Native Builder
+      uses: reactivecircus/android-emulator-runner@v2
+      with:
+        api-level: 29
+        target: default
+        arch: x86_64
+        disable-animations: true
+        profile: Nexus 6
+        script: ./gradlew assembleDebug
+
+    - name: Build with Alternative Action
+      if: failure()
       run: |
-        export org.gradle.jvmargs="-Xmx2g"
-        # gradlew 없이 시스템 전역 gradle 명령어로 직접 빌드 강제 실행
-        gradle assembleDebug --no-daemon
+        export SDKROOT=$ANDROID_HOME
+        echo "sdk.dir=$ANDROID_HOME" > local.properties
+        ./gradlew assembleDebug || gradle assembleDebug
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v3
